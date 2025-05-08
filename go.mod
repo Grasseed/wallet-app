@@ -1,6 +1,6 @@
 module github.com/Grasseed/wallet-app
 
-go 1.23.4
+go 1.23
 
 require (
 	github.com/btcsuite/btcd v0.22.0-beta
