@@ -1,2 +1,57 @@
-# wallet-app
-使用 Go 語言開發的輕量級命令列錢包工具，支援 BIP39 助記詞生成、HD 錢包地址導出（BIP32/BIP44），以及 Bitcoin 離線交易簽章功能。
+# wallet-app 🪙
+
+> A lightweight command-line Bitcoin wallet built with Go.  
+> 使用 Go 語言開發的輕量級命令列 BTC 錢包工具，支援助記詞生成、地址導出與簽名功能。
+
+---
+
+## ✨ Features
+
+- ✅ Generate BIP39 mnemonic phrases
+- ✅ Derive HD wallet addresses using BIP32/BIP44 (P2PKH)
+- ✅ Export private keys in WIF format
+- ✅ (Upcoming) Offline Bitcoin transaction signing
+
+---
+
+## 📦 Installation
+
+```bash
+git clone https://github.com/yourname/wallet-app.git
+cd wallet-app
+go build -o wallet
+```
+
+---
+
+## 🧪 Usage Examples
+
+### Generate Mnemonic
+```bash
+./wallet mnemonic
+```
+
+### Derive BTC Address
+```bash
+./wallet derive --mnemonic="..." --path="m/44'/0'/0'/0/0"
+```
+
+---
+
+## 📁 Project Structure
+
+```
+wallet-app/
+├── main.go                # CLI entry point
+├── wallet/
+│   ├── mnemonic.go        # BIP39 mnemonic utilities
+│   └── keygen.go          # BIP32/BIP44 derivation logic
+└── test/
+    └── wallet_test.go     # Unit tests
+```
+
+---
+
+## 📄 License
+
+MIT License © 2025 yourname
