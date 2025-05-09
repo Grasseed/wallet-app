@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/btcsuite/btcd/chaincfg"
+	"github.com/btcsuite/btcd/txscript"
 	"github.com/btcsuite/btcutil"
 	"github.com/btcsuite/btcutil/hdkeychain"
 	"github.com/tyler-smith/go-bip39"
@@ -66,13 +67,31 @@ func DeriveBTCAddress(mnemonic, path, addrType string) (string, string, error) {
 			return "", "", err
 		}
 		return addr.EncodeAddress(), wif.String(), nil
-	} else {
+	} else if addrType == "p2sh" {
+		// 建立 P2WPKH 地址作為內層
+		witnessProg := btcutil.Hash160(pubKey.SerializeCompressed())
+		nestedAddr, err := btcutil.NewAddressWitnessPubKeyHash(witnessProg, &chaincfg.MainNetParams)
+		if err != nil {
+			return "", "", err
+		}
+		script, err := txscript.PayToAddrScript(nestedAddr)
+		if err != nil {
+			return "", "", err
+		}
+		p2shAddr, err := btcutil.NewAddressScriptHash(script, &chaincfg.MainNetParams)
+		if err != nil {
+			return "", "", err
+		}
+		return p2shAddr.EncodeAddress(), wif.String(), nil
+	} else if addrType == "p2pkh" {
 		pubKeyHash := btcutil.Hash160(pubKey.SerializeCompressed())
 		addr, err := btcutil.NewAddressPubKeyHash(pubKeyHash, &chaincfg.MainNetParams)
 		if err != nil {
 			return "", "", err
 		}
 		return addr.EncodeAddress(), wif.String(), nil
+	} else {
+		return "", "", fmt.Errorf("unsupported addrType: %s", addrType)
 	}
 }
 

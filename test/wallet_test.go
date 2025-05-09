@@ -69,3 +69,19 @@ func TestDeriveSegwitAddress(t *testing.T) {
 	t.Logf("Segwit address: %s", address)
 	t.Logf("Segwit WIF: %s", wif)
 }
+
+func TestDeriveP2SHAddress(t *testing.T) {
+	if mnemonic == "" {
+		t.Skip("Mnemonic not initialized")
+	}
+	path := "m/49'/0'/0'/0/0"
+	address, wif, err := wallet.DeriveBTCAddress(mnemonic, path, "p2sh")
+	if err != nil {
+		t.Fatalf("Failed to derive p2sh address: %v", err)
+	}
+	if address == "" || wif == "" {
+		t.Errorf("P2SH address or WIF is empty")
+	}
+	t.Logf("P2SH address: %s", address)
+	t.Logf("P2SH WIF: %s", wif)
+}

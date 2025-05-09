@@ -18,7 +18,17 @@ func main() {
 
 	switch cmd {
 	case "mnemonic":
-		mnemonic, err := wallet.GenerateMnemonic(12)
+		wordCount := 12
+		for _, arg := range os.Args[2:] {
+			if strings.HasPrefix(arg, "--words=") {
+				fmt.Sscanf(strings.TrimPrefix(arg, "--words="), "%d", &wordCount)
+				if wordCount != 12 && wordCount != 18 && wordCount != 24 {
+					fmt.Println("Invalid word count. Must be 12, 18, or 24.")
+					return
+				}
+			}
+		}
+		mnemonic, err := wallet.GenerateMnemonic(wordCount)
 		if err != nil {
 			fmt.Println("Error generating mnemonic:", err)
 			return
@@ -89,8 +99,9 @@ func main() {
 func printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  mnemonic               Generate a 12-word mnemonic phrase")
-	fmt.Println("  derive --mnemonic=MNEMONIC --path=PATH [--type=p2pkh|segwit]")
+	fmt.Println("                         Optionally add --words=12|18|24 to specify mnemonic length")
+	fmt.Println("  derive --mnemonic=MNEMONIC --path=PATH [--type=p2pkh|segwit|p2sh]")
 	fmt.Println("                         Derive BTC address and WIF private key from mnemonic and derivation path")
-	fmt.Println("  verify --mnemonic=MNEMONIC --path=PATH --expect=ADDRESS [--type=p2pkh|segwit]")
+	fmt.Println("  verify --mnemonic=MNEMONIC --path=PATH --expect=ADDRESS [--type=p2pkh|segwit|p2sh]")
 	fmt.Println("                         Verify that derived address matches expected address")
 }
