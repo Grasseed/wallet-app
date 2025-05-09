@@ -11,7 +11,7 @@ import (
 )
 
 // DeriveBTCAddress 依據助記詞與 BIP44 路徑導出 BTC P2PKH 地址與 WIF 私鑰
-func DeriveBTCAddress(mnemonic, path string) (string, string, error) {
+func DeriveBTCAddress(mnemonic, path, addrType string) (string, string, error) {
 	// 驗證助記詞合法性
 	if !bip39.IsMnemonicValid(mnemonic) {
 		return "", "", fmt.Errorf("invalid mnemonic")
@@ -58,13 +58,22 @@ func DeriveBTCAddress(mnemonic, path string) (string, string, error) {
 		return "", "", err
 	}
 	pubKey := privKey.PubKey()
-	pubKeyHash := btcutil.Hash160(pubKey.SerializeCompressed())
-	addr, err := btcutil.NewAddressPubKeyHash(pubKeyHash, &chaincfg.MainNetParams)
-	if err != nil {
-		return "", "", err
-	}
 
-	return addr.EncodeAddress(), wif.String(), nil
+	if addrType == "segwit" {
+		witnessProg := btcutil.Hash160(pubKey.SerializeCompressed())
+		addr, err := btcutil.NewAddressWitnessPubKeyHash(witnessProg, &chaincfg.MainNetParams)
+		if err != nil {
+			return "", "", err
+		}
+		return addr.EncodeAddress(), wif.String(), nil
+	} else {
+		pubKeyHash := btcutil.Hash160(pubKey.SerializeCompressed())
+		addr, err := btcutil.NewAddressPubKeyHash(pubKeyHash, &chaincfg.MainNetParams)
+		if err != nil {
+			return "", "", err
+		}
+		return addr.EncodeAddress(), wif.String(), nil
+	}
 }
 
 // parseUint32 將字串轉為 uint32

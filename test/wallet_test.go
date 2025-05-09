@@ -8,8 +8,11 @@ import (
 	"github.com/tyler-smith/go-bip39"
 )
 
+var mnemonic string
+
 func TestGenerateMnemonic(t *testing.T) {
-	mnemonic, err := wallet.GenerateMnemonic(12)
+	var err error
+	mnemonic, err = wallet.GenerateMnemonic(12)
 	if err != nil {
 		t.Fatalf("Failed to generate mnemonic: %v", err)
 	}
@@ -20,10 +23,11 @@ func TestGenerateMnemonic(t *testing.T) {
 }
 
 func TestDeriveBTCAddress(t *testing.T) {
-	// 測試助記詞與預期的地址（實際上可以根據助記詞產出固定的結果）
-	mnemonic := "abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon abandon about"
+	if mnemonic == "" {
+		t.Skip("Mnemonic not initialized")
+	}
 	path := "m/44'/0'/0'/0/0"
-	address, wif, err := wallet.DeriveBTCAddress(mnemonic, path)
+	address, wif, err := wallet.DeriveBTCAddress(mnemonic, path, "p2pkh")
 	if err != nil {
 		t.Fatalf("Failed to derive address: %v", err)
 	}
@@ -34,23 +38,34 @@ func TestDeriveBTCAddress(t *testing.T) {
 	t.Logf("Derived WIF: %s", wif)
 }
 
-func TestDeriveRandomMnemonic(t *testing.T) {
-	mnemonic, err := wallet.GenerateMnemonic(12)
-	if err != nil {
-		t.Fatalf("Failed to generate mnemonic: %v", err)
+func TestDeriveRandomPathAddress(t *testing.T) {
+	if mnemonic == "" {
+		t.Skip("Mnemonic not initialized")
 	}
-	if !bip39.IsMnemonicValid(mnemonic) {
-		t.Fatalf("Generated mnemonic is invalid: %s", mnemonic)
-	}
-	path := "m/44'/0'/0'/0/0"
-	address, wif, err := wallet.DeriveBTCAddress(mnemonic, path)
+	path := "m/44'/0'/0'/0/5"
+	address, wif, err := wallet.DeriveBTCAddress(mnemonic, path, "p2pkh")
 	if err != nil {
-		t.Fatalf("Failed to derive address from random mnemonic: %v", err)
+		t.Fatalf("Failed to derive address from random path: %v", err)
 	}
 	if address == "" || wif == "" {
-		t.Errorf("Derived address or WIF from random mnemonic is empty")
+		t.Errorf("Derived address or WIF from random path is empty")
 	}
-	t.Logf("Random mnemonic: %s", mnemonic)
-	t.Logf("Derived address: %s", address)
+	t.Logf("Random path address: %s", address)
 	t.Logf("Derived WIF: %s", wif)
+}
+
+func TestDeriveSegwitAddress(t *testing.T) {
+	if mnemonic == "" {
+		t.Skip("Mnemonic not initialized")
+	}
+	path := "m/84'/0'/0'/0/0"
+	address, wif, err := wallet.DeriveBTCAddress(mnemonic, path, "segwit")
+	if err != nil {
+		t.Fatalf("Failed to derive segwit address: %v", err)
+	}
+	if address == "" || wif == "" {
+		t.Errorf("Segwit address or WIF is empty")
+	}
+	t.Logf("Segwit address: %s", address)
+	t.Logf("Segwit WIF: %s", wif)
 }

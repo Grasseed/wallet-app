@@ -26,12 +26,15 @@ func main() {
 		fmt.Println("Mnemonic:", mnemonic)
 
 	case "derive":
-		var mnemonic, path string
+		var mnemonic, path, addrType string
+		addrType = "p2pkh"
 		for _, arg := range os.Args[2:] {
 			if strings.HasPrefix(arg, "--mnemonic=") {
 				mnemonic = strings.TrimPrefix(arg, "--mnemonic=")
 			} else if strings.HasPrefix(arg, "--path=") {
 				path = strings.TrimPrefix(arg, "--path=")
+			} else if strings.HasPrefix(arg, "--type=") {
+				addrType = strings.TrimPrefix(arg, "--type=")
 			}
 		}
 		if mnemonic == "" || path == "" {
@@ -39,7 +42,7 @@ func main() {
 			printUsage()
 			return
 		}
-		address, wif, err := wallet.DeriveBTCAddress(mnemonic, path)
+		address, wif, err := wallet.DeriveBTCAddress(mnemonic, path, addrType)
 		if err != nil {
 			fmt.Println("Error deriving BTC address:", err)
 			return
@@ -48,7 +51,8 @@ func main() {
 		fmt.Println("WIF Private Key:", wif)
 
 	case "verify":
-		var mnemonic, path, expect string
+		var mnemonic, path, expect, addrType string
+		addrType = "p2pkh"
 		for _, arg := range os.Args[2:] {
 			if strings.HasPrefix(arg, "--mnemonic=") {
 				mnemonic = strings.TrimPrefix(arg, "--mnemonic=")
@@ -56,6 +60,8 @@ func main() {
 				path = strings.TrimPrefix(arg, "--path=")
 			} else if strings.HasPrefix(arg, "--expect=") {
 				expect = strings.TrimPrefix(arg, "--expect=")
+			} else if strings.HasPrefix(arg, "--type=") {
+				addrType = strings.TrimPrefix(arg, "--type=")
 			}
 		}
 		if mnemonic == "" || path == "" || expect == "" {
@@ -63,7 +69,7 @@ func main() {
 			printUsage()
 			return
 		}
-		address, _, err := wallet.DeriveBTCAddress(mnemonic, path)
+		address, _, err := wallet.DeriveBTCAddress(mnemonic, path, addrType)
 		if err != nil {
 			fmt.Println("Error deriving BTC address:", err)
 			return
@@ -83,8 +89,8 @@ func main() {
 func printUsage() {
 	fmt.Println("Usage:")
 	fmt.Println("  mnemonic               Generate a 12-word mnemonic phrase")
-	fmt.Println("  derive --mnemonic=MNEMONIC --path=PATH")
+	fmt.Println("  derive --mnemonic=MNEMONIC --path=PATH [--type=p2pkh|segwit]")
 	fmt.Println("                         Derive BTC address and WIF private key from mnemonic and derivation path")
-	fmt.Println("  verify --mnemonic=MNEMONIC --path=PATH --expect=ADDRESS")
+	fmt.Println("  verify --mnemonic=MNEMONIC --path=PATH --expect=ADDRESS [--type=p2pkh|segwit]")
 	fmt.Println("                         Verify that derived address matches expected address")
 }
