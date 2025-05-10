@@ -54,4 +54,4 @@ wallet-app/
 
 ## 📄 License
 
-MIT License © 2025 yourname
+MIT License © 2025 Grasseed
