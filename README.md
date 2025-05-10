@@ -17,7 +17,7 @@
 ## 📦 Installation
 
 ```bash
-git clone https://github.com/yourname/wallet-app.git
+git clone https://github.com/Grasseed/wallet-app.git
 cd wallet-app
 go build -o wallet
 ```
