@@ -45,9 +45,12 @@ wallet-app/
 ├── main.go                # CLI entry point
 ├── wallet/
 │   ├── mnemonic.go        # BIP39 mnemonic utilities
-│   └── keygen.go          # BIP32/BIP44 derivation logic
-└── test/
-    └── wallet_test.go     # Unit tests
+│   └── keygen.go          # BIP32/BIP44/P2SH derivation logic
+├── test/
+│   └── wallet_test.go     # Unit tests for address and mnemonic generation
+├── Makefile              # Build and test automation
+├── go.mod                # Go module definitions
+└── README.md             # Project documentation
 ```
 
 ---
