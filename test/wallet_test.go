@@ -11,15 +11,19 @@ import (
 var mnemonic string
 
 func TestGenerateMnemonic(t *testing.T) {
-	var err error
-	mnemonic, err = wallet.GenerateMnemonic(12)
-	if err != nil {
-		t.Fatalf("Failed to generate mnemonic: %v", err)
+	wordCounts := []int{12, 18, 24}
+
+	for _, wc := range wordCounts {
+		mnemonic, err := wallet.GenerateMnemonic(wc)
+		if err != nil {
+			t.Errorf("Failed to generate %d-word mnemonic: %v", wc, err)
+			continue
+		}
+		if !bip39.IsMnemonicValid(mnemonic) {
+			t.Errorf("Generated %d-word mnemonic is invalid: %s", wc, mnemonic)
+		}
+		t.Logf("Generated %d-word mnemonic: %s", wc, mnemonic)
 	}
-	if !bip39.IsMnemonicValid(mnemonic) {
-		t.Errorf("Generated mnemonic is invalid: %s", mnemonic)
-	}
-	t.Logf("Generated mnemonic: %s", mnemonic)
 }
 
 func TestDeriveBTCAddress(t *testing.T) {
